@@ -1,0 +1,35 @@
+- name: Create Prometheus user
+  user:
+    name: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    system: true
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+  loop:
+    - "{{ prometheus_config_dir }}"
+    - "{{ prometheus_data_dir }}"
+
+- name: Download and unpack Prometheus binary
+  unarchive:
+    src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    dest: "/tmp"
+    remote_src: true
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+  become: true
+
+- name: Move Prometheus binaries to the appropriate path
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: '0755'
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+  loop:
+    - prometheus
+    - promtool

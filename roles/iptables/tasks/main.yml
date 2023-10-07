@@ -1,0 +1,19 @@
+- name: Ensure iptables is installed
+  apt: 
+    name: "{{ iptables_package_name }}"
+    state: present
+  become: true
+
+- name: Ensure iptables persistent is installed
+  apt:
+    name: iptables-persistent
+    state: present
+  become: true
+
+- name: Apply iptables rules
+  template: 
+    src: iptables-rules.j2
+    dest: "{{ iptables_rules_path }}"
+  become: true
+  notify: 
+    - restart iptables

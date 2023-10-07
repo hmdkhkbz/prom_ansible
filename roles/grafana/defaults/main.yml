@@ -1,0 +1,3 @@
+grafana_version: "latest"
+grafana_admin_user: "admin"
+grafana_admin_password: "admin"

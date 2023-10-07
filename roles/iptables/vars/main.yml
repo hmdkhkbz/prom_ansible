@@ -1,0 +1,4 @@
+iptables_package_name: iptables
+iptables_save_command: /sbin/iptables-save
+iptables_restore_command: /sbin/iptables-restore
+

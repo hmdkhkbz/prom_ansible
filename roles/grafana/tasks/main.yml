@@ -1,0 +1,25 @@
+- name: Install dependencies
+  apt:
+    name: ["software-properties-common", "adduser", "libfontconfig1"]
+    state: present
+
+- name: Add Grafana APT repository and import GPG key
+  apt_repository:
+    repo: "deb https://packages.grafana.com/oss/deb stable main"
+    state: present
+  become: true
+
+- name: Install Grafana
+  apt:
+    name: "grafana={{ grafana_version }}"
+    state: present
+  become: true
+
+- name: Template Grafana configuration
+  template:
+    src: grafana.ini.j2
+    dest: "{{ grafana_config_dir }}/grafana.ini"
+    owner: root
+    group: grafana
+    mode: 0640
+  notify: Restart Grafana

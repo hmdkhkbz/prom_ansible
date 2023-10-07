@@ -1,0 +1,35 @@
+- name: Create Alertmanager user
+  user:
+    name: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+    system: true
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+  loop:
+    - "{{ alertmanager_config_dir }}"
+    - "{{ alertmanager_data_dir }}"
+
+- name: Download and unpack Alertmanager binary
+  unarchive:
+    src: "https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.linux-amd64.tar.gz"
+    dest: "/tmp"
+    remote_src: true
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+  become: true
+
+- name: Move Alertmanager binaries to the appropriate path
+  copy:
+    src: "/tmp/alertmanager-{{ alertmanager_version }}.linux-amd64/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: '0755'
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+  loop:
+    - alertmanager
+    - amtool
